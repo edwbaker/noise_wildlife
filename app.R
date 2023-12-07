@@ -38,7 +38,7 @@ ui <- fluidPage(
 )
 
 get_audio_tag<-function(input){
-  filename <- paste0(paste(input$animal, input$animal_v, input$noise, input$noise_v, sep="_"), ".wav")
+  filename <- paste0("_",paste(input$animal, input$animal_v, input$noise, input$noise_v, sep="_"), ".wav")
   if (!file.exists(paste0("www/",filename))) {
     if (input$noise == "white") {
       wn <- readWave("www/wnoise.wav")
