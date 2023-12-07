@@ -12,6 +12,7 @@ library(tuneR)
 
 if (!file.exists("www/3k.wav")) {
   w <- noise(3000, samp.rate=41000, duration=3*41000)
+  w <- 0.75 * w
   writeWave(w, "www/3k.wav")
 }
 if (!file.exists("www/wnoise.wav")) {
