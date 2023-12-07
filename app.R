@@ -1,23 +1,6 @@
 library(shiny)
 library(tuneR)
 
-if (!file.exists("www/3k.wav")) {
-  w <- 0.45*sine(3000, samp.rate=41000, duration=3*41000)
-  writeWave(w, "www/3k.wav")
-}
-if (!file.exists("www/6k.wav")) {
-  w <- 0.45*sine(6000, samp.rate=41000, duration=3*41000)
-  writeWave(w, "www/6k.wav")
-}
-if (!file.exists("www/wnoise.wav")) {
-  w <- 0.45*noise(kind="white", samp.rate=41000, duration=3*41000)
-  writeWave(w, "www/wnoise.wav")
-}
-if (!file.exists("www/pnoise.wav")) {
-  w <- 0.45*noise(kind="pink", samp.rate=41000, duration=3*41000)
-  writeWave(w, "www/pnoise.wav")
-}
-
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
