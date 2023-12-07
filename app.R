@@ -19,11 +19,24 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            sliderInput("noise",
-                        label="Noise volume:",
-                        min = 0,
-                        max = 100,
-                        value = 0)
+          selectInput("animal", 
+                      "Animal:",
+                      c("3kHz sine" = "3kHz",
+                        "6kHz sine" = "6kHz")),
+          sliderInput("animal_v",
+                      label="Animal volume:",
+                      min = 0,
+                      max = 100,
+                      value = 50),
+          selectInput("noise", 
+                      "Noise:",
+                      c("white noise" = "white",
+                        "pink noise" = "pink")),
+          sliderInput("noise_v",
+                      label="Noise volume:",
+                      min = 0,
+                      max = 100,
+                      value = 50)
         ),
 
         # Show a plot of the generated distribution
@@ -34,31 +47,46 @@ ui <- fluidPage(
 )
 
 get_audio_tag<-function(input){
-  if (input$noise == 0) {
-    return(tags$audio(src = "3k.wav", type ="audio/wav", controls = NA))
-  } else {
-    filename <- paste0(input$noise, ".wav")
-    if (!file.exists(filename)) {
-      w <- readWave("www/3k.wav")
-      n <- readWave("www/wnoise.wav")
-      n_scale <- input$noise/100
-      wn <- w + n_scale*n
-      writeWave(normalize(wn), paste0("www/",filename))
-      return(tags$audio(src = filename, type ="audio/wav", controls = NA))
+  filename <- paste0(paste(input$animal, input$animal_v, input$noise, input$noise_v, sep="_"), ".wav")
+  if (!file.exists(paste0("www/",filename))) {
+    if (input$noise == "white") {
+      wn <- readWave("www/wnoise.wav")
     }
+    if (input$noise == "pink") {
+      wn <- readWave("www/pnoise.wav")
+    }
+    if (input$animal == "3kHz") {
+      wa <- readWave("www/3k.wav")
+    }
+    if (input$animal == "6kHz") {
+      wa <- readWave("www/6k.wav")
+    }
+    
+    a_scale <- input$animal_v/100
+    n_scale <- input$noise_v/100
+    w <- a_scale*wa + n_scale*wn 
+    writeWave(normalize(w), paste0("www/",filename))
   }
+  return(tags$audio(src = filename, type ="audio/wav", controls = NA))
 }
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   if (!file.exists("www/3k.wav")) {
     w <- sine(3000, samp.rate=41000, duration=3*41000)
-    w <- 0.5 * w
     writeWave(w, "www/3k.wav")
+  }
+  if (!file.exists("www/6k.wav")) {
+    w <- sine(6000, samp.rate=41000, duration=3*41000)
+    writeWave(w, "www/6k.wav")
   }
   if (!file.exists("www/wnoise.wav")) {
     w <- noise(kind="white", samp.rate=41000, duration=3*41000)
     writeWave(w, "www/wnoise.wav")
+  }
+  if (!file.exists("www/pnoise.wav")) {
+    w <- noise(kind="pink", samp.rate=41000, duration=3*41000)
+    writeWave(w, "www/pnoise.wav")
   }
   output$audio <- renderUI({
     get_audio_tag(input)
