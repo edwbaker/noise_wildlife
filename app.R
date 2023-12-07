@@ -1,13 +1,10 @@
 library(shiny)
 library(tuneR)
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
-
     # Application title
     titlePanel("Noise demo"),
 
-    # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
           selectInput("animal", 
@@ -30,7 +27,6 @@ ui <- fluidPage(
                       value = 50)
         ),
 
-        # Show a plot of the generated distribution
         mainPanel(
           uiOutput("audio")
         )
@@ -61,7 +57,6 @@ get_audio_tag<-function(input){
   return(tags$audio(src = filename, type ="audio/wav", controls = NA))
 }
 
-# Define server logic required to draw a histogram
 server <- function(input, output) {
 
   output$audio <- renderUI({
