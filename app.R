@@ -65,7 +65,7 @@ get_audio_tag<-function(input){
     a_scale <- input$animal_v/100
     n_scale <- input$noise_v/100
     w <- a_scale*wa + n_scale*wn 
-    writeWave(normalize(w), paste0("www/",filename))
+    writeWave(w, paste0("www/",filename))
   }
   return(tags$audio(src = filename, type ="audio/wav", controls = NA))
 }
@@ -73,19 +73,19 @@ get_audio_tag<-function(input){
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   if (!file.exists("www/3k.wav")) {
-    w <- sine(3000, samp.rate=41000, duration=3*41000)
+    w <- 0.5*sine(3000, samp.rate=41000, duration=3*41000)
     writeWave(w, "www/3k.wav")
   }
   if (!file.exists("www/6k.wav")) {
-    w <- sine(6000, samp.rate=41000, duration=3*41000)
+    w <- 0.5*sine(6000, samp.rate=41000, duration=3*41000)
     writeWave(w, "www/6k.wav")
   }
   if (!file.exists("www/wnoise.wav")) {
-    w <- noise(kind="white", samp.rate=41000, duration=3*41000)
+    w <- 0.5*noise(kind="white", samp.rate=41000, duration=3*41000)
     writeWave(w, "www/wnoise.wav")
   }
   if (!file.exists("www/pnoise.wav")) {
-    w <- noise(kind="pink", samp.rate=41000, duration=3*41000)
+    w <- 0.5*noise(kind="pink", samp.rate=41000, duration=3*41000)
     writeWave(w, "www/pnoise.wav")
   }
   output$audio <- renderUI({
