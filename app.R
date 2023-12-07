@@ -1,5 +1,6 @@
 library(shiny)
 library(tuneR)
+library(seewave)
 
 ui <- fluidPage(
     # Application title
@@ -9,8 +10,8 @@ ui <- fluidPage(
         sidebarPanel(
           selectInput("animal", 
                       "Animal:",
-                      c("3kHz sine" = "3kHz",
-                        "6kHz sine" = "6kHz")),
+                      c("Blackbird" = "blackbird",
+                        "Bush criket" = "bush_cricket")),
           sliderInput("animal_v",
                       label="Animal volume:",
                       min = 0,
@@ -18,47 +19,52 @@ ui <- fluidPage(
                       value = 50),
           selectInput("noise", 
                       "Noise:",
-                      c("white noise" = "white",
-                        "pink noise" = "pink")),
+                      c("White noise" = "wnoise",
+                        "Road" = "road"),
+                      selected="road"),
           sliderInput("noise_v",
                       label="Noise volume:",
                       min = 0,
                       max = 100,
-                      value = 50)
+                      value = 0)
         ),
 
         mainPanel(
+          plotOutput("spectro"),
           uiOutput("audio")
         )
     )
 )
 
+v_wave <- reactiveVal({
+  readWave("www/blackbird.wav")
+})
+
+
 get_audio_tag<-function(input){
   filename <- paste0("_",paste(input$animal, input$animal_v, input$noise, input$noise_v, sep="_"), ".wav")
+  wa <- readWave(paste0("www/",input$animal,".wav"))
+  wn <- readWave(paste0("www/",input$noise,".wav"))
+
+  
+  a_scale <- input$animal_v/200
+  n_scale <- input$noise_v/200
+  w <- a_scale*wa + n_scale*wn 
+  print(max(w@left))
   if (!file.exists(paste0("www/",filename))) {
-    if (input$noise == "white") {
-      wn <- readWave("www/wnoise.wav")
-    }
-    if (input$noise == "pink") {
-      wn <- readWave("www/pnoise.wav")
-    }
-    if (input$animal == "3kHz") {
-      wa <- readWave("www/3k.wav")
-    }
-    if (input$animal == "6kHz") {
-      wa <- readWave("www/6k.wav")
-    }
-    
-    a_scale <- input$animal_v/100
-    n_scale <- input$noise_v/100
-    w <- a_scale*wa + n_scale*wn 
     writeWave(w, paste0("www/",filename))
   }
+  v_wave(w)
   return(tags$audio(src = filename, type ="audio/wav", controls = NA))
 }
 
-server <- function(input, output) {
 
+server <- function(input, output) {
+  output$spectro <- renderPlot({
+    spectro(v_wave(),
+            norm=F, scale=F, wl=256
+            )
+  })
   output$audio <- renderUI({
     get_audio_tag(input)
     })
