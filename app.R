@@ -11,10 +11,10 @@ ui <- fluidPage(
           selectInput("animal", 
                       "Animal:",
                       c("Blackbird" = "blackbird",
-                        "Bush criket" = "bush_cricket")),
+                        "Bush cricket" = "bush_cricket")),
           sliderInput("animal_v",
                       label="Animal volume:",
-                      min = 1,
+                      min = 0,
                       max = 100,
                       value = 50),
           selectInput("noise", 
@@ -100,7 +100,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
   }
   if (plot) {
     if (is.null(alim)) {
-      alim <- max(abs(wave))
+      alim <- max(abs(wave), na.rm=TRUE)
     }
     if (k == 1 & j == 1) {
       if (!is.null(scroll)) {
@@ -123,9 +123,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
                      collab = collab, tlab = tlab, alab = alab, 
                      cexlab = cexlab, fontlab = fontlab, colline = colline, 
                      colaxis = colaxis, cexaxis = cexaxis, fontaxis = fontaxis, 
-                     coly0 = coly0, bty = bty, tickup = max(abs(wave), 
-                                                            na.rm = TRUE), ylim = c(-max(abs(wave)), 
-                                                                                    max(abs(wave))))
+                     coly0 = coly0, bty = bty, tickup = alim, ylim = c(-alim, alim))
             title(main = pos, col.main = coltitle, cex.main = cextitle, 
                   font.main = fonttitle)
           })
@@ -146,7 +144,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
                font.lab = 2, bty = bty)
           if (bty == "l" | bty == "o") {
             axis(side = 1, col = colline, labels = FALSE)
-            axis(side = 2, at = max(abs(wave), na.rm = TRUE), 
+            axis(side = 2, at = alim, 
                  col = colline, labels = FALSE)
           }
           mtext(tlab, col = collab, font = fontlab, cex = cexlab, 
@@ -178,7 +176,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
              font.lab = 2, bty = bty)
         if (bty == "l" | bty == "o") {
           axis(side = 1, col = colline, labels = FALSE)
-          axis(side = 2, at = max(abs(wave), na.rm = TRUE), 
+          axis(side = 2, at = alim, 
                col = colline, labels = FALSE)
         }
         if (labels) {
@@ -252,7 +250,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
            bty = bty)
       axis(side = 1, col = colline, labels = FALSE)
       if (bty == "l" | bty == "o") {
-        axis(side = 2, at = max(abs(wave)), col = colline, 
+        axis(side = 2, at = alim, col = colline, 
              labels = FALSE)
         axis(side = 1, col = colline, labels = FALSE)
       }
@@ -286,7 +284,7 @@ oscillo2 <- function (wave, f, channel = 1, from = NULL, to = NULL, fastdisp = F
              ylim = c(-alim, alim), xaxt = xaxt, yaxt = yaxt, 
              bty = bty)
         if (bty == "l" | bty == "o") {
-          axis(side = 2, at = max(abs(wave)), col = colline, 
+          axis(side = 2, at = alim, col = colline, 
                labels = FALSE)
           axis(side = 1, col = colline, labels = FALSE)
         }
@@ -310,7 +308,6 @@ get_audio_tag<-function(input){
   a_scale <- input$animal_v/200
   n_scale <- input$noise_v/200
   w <- a_scale*wa + n_scale*wn 
-  print(max(w@left))
   if (!file.exists(paste0("www/",filename))) {
     writeWave(w, paste0("www/",filename))
   }
@@ -321,12 +318,16 @@ get_audio_tag<-function(input){
 
 server <- function(input, output) {
   output$spectro <- renderPlot({
-    spectro(v_wave(),
-            norm=F, scale=F, wl=256
-            )
+    if (!(input$animal_v == 0 && input$noise_v ==0)) {
+      spectro(v_wave(),
+              norm=F, scale=F, wl=256
+              )
+    }
   })
   output$oscillo <- renderPlot({
-    oscillo2(v_wave(),alim=0.5)
+    if (!(input$animal_v == 0 && input$noise_v ==0)) {
+      oscillo2(v_wave(),alim=0.5)
+    }
   })
   output$audio <- renderUI({
     get_audio_tag(input)
