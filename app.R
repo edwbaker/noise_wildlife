@@ -52,7 +52,7 @@ get_audio_tag<-function(input){
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   if (!file.exists("www/3k.wav")) {
-    w <- noise(3000, samp.rate=41000, duration=3*41000)
+    w <- sine(3000, samp.rate=41000, duration=3*41000)
     w <- 0.5 * w
     writeWave(w, "www/3k.wav")
   }
