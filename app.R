@@ -30,7 +30,7 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
             sliderInput("noise",
-                        "Noise volume:",
+                        label="Noise volume:",
                         min = 0,
                         max = 100,
                         value = 0)
