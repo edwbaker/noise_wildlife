@@ -1162,7 +1162,7 @@
     },
     "shinynhm": {
       "Package": "shinynhm",
-      "Version": "0.1.0",
+      "Version": "0.2.0",
       "Source": "Cellar",
       "Title": "NHM Shiny Theme",
       "Authors@R": "c( person(\"Ed\", \"Baker\", email = \"ed@ebaker.me.uk\", role = c(\"aut\", \"cre\")), person(\"Natural History Museum\", role = \"cph\") )",

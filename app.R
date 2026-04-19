@@ -326,11 +326,12 @@ server <- function(input, output) {
       nhm_par()
       spectro(v_wave(),
               norm=F, scale=F, wl=256,
+              palette=nhm_spectro_palette(),
               colbg=cols$card, colaxis=cols$text, collab=cols$text,
               colgrid=cols$border
               )
     }
-  })
+  }, bg = "transparent")
   output$oscillo <- renderPlot({
     if (!(input$animal_v == 0 && input$noise_v ==0)) {
       nhm_par()
@@ -338,7 +339,7 @@ server <- function(input, output) {
                colwave=cols$cyan, colaxis=cols$text, collab=cols$text,
                colline=cols$muted, coly0=cols$border)
     }
-  })
+  }, bg = "transparent")
   output$audio <- renderUI({
     get_audio_tag(input)
     })
