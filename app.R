@@ -4,7 +4,9 @@ library(tuneR)
 library(seewave)
 
 ui <- nhm_page(
-    title = "Noise demo",
+    title = "Wildlife and noise demo",
+    subbrand = "NHM Living Labs",
+    description = "Investigate the impact of noise on wildlife.",
 
     sidebarLayout(
         sidebarPanel(
