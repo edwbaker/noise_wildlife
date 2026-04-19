@@ -1,10 +1,10 @@
 library(shiny)
+library(shinynhm)
 library(tuneR)
 library(seewave)
 
-ui <- fluidPage(
-    # Application title
-    titlePanel("Noise demo"),
+ui <- nhm_page(
+    title = "Noise demo",
 
     sidebarLayout(
         sidebarPanel(
@@ -30,9 +30,9 @@ ui <- fluidPage(
         ),
 
         mainPanel(
-          plotOutput("spectro"),
-          plotOutput("oscillo"),
-          uiOutput("audio")
+          nhm_panel(title = "Spectrogram", plotOutput("spectro")),
+          nhm_panel(title = "Oscillogram", plotOutput("oscillo")),
+          nhm_panel(uiOutput("audio"))
         )
     )
 )
@@ -312,21 +312,29 @@ get_audio_tag<-function(input){
     writeWave(w, paste0("www/",filename))
   }
   v_wave(w)
-  return(tags$audio(src = filename, type ="audio/wav", controls = NA))
+  return(nhm_audio(src = filename, type = "audio/wav"))
 }
 
 
 server <- function(input, output) {
+  cols <- nhm_colours()
+
   output$spectro <- renderPlot({
     if (!(input$animal_v == 0 && input$noise_v ==0)) {
+      nhm_par()
       spectro(v_wave(),
-              norm=F, scale=F, wl=256
+              norm=F, scale=F, wl=256,
+              colbg=cols$card, colaxis=cols$text, collab=cols$text,
+              colgrid=cols$border
               )
     }
   })
   output$oscillo <- renderPlot({
     if (!(input$animal_v == 0 && input$noise_v ==0)) {
-      oscillo2(v_wave(),alim=0.5)
+      nhm_par()
+      oscillo2(v_wave(), alim=0.5,
+               colwave=cols$cyan, colaxis=cols$text, collab=cols$text,
+               colline=cols$muted, coly0=cols$border)
     }
   })
   output$audio <- renderUI({
