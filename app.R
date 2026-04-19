@@ -30,9 +30,9 @@ ui <- nhm_page(
         ),
 
         mainPanel(
+          nhm_panel(uiOutput("audio")),
           nhm_panel(title = "Spectrogram", plotOutput("spectro")),
-          nhm_panel(title = "Oscillogram", plotOutput("oscillo")),
-          nhm_panel(uiOutput("audio"))
+          nhm_panel(title = "Oscillogram", plotOutput("oscillo"))
         )
     )
 )
